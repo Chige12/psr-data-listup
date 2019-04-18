@@ -1,0 +1,8 @@
+{
+  "name": "psr-data-listup",
+  "version": "1.0.0",
+  "description": "ステップ管理ツールのmhtmlファイルを表にするもの",
+  "main": "index.js",
+  "author": "chige12",
+  "license": "MIT"
+}
