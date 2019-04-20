@@ -13,5 +13,5 @@ zipファイルをまとめてアップロードしたら、mhtml内のデータ
 * zip解凍できたっぽい
 * mhtmlをjsonとかのjavascriptで扱える形にしたい。←わからない！！！
   * おそらく[これ(mhtml-parser)](https://www.npmjs.com/package/mhtml-parser)を使う
-  * でもこれnode.js用な気がする。もしかしてブラウザで動かせない？？？
+  * でもこれnode.js用な気がする。webpackで依存関係解消しなきゃいけないやつやな…
 * Vueで表を作る。←多分できる
