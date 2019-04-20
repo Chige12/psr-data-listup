@@ -3,68 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <title>psr Data-Listup</title>
-    <link rel="stylesheet" href="./dist/dropzone.css">
+    <link rel="stylesheet" href="./index.css">
 </head>
 <body>
     <div id="root">
         <input type="text" id="input" v-model="message">
         <p>{{message}}</p>
-        <form action="/file-upload" class="dropzone" id="my-awesome-dropzone"></form>
-        <div id="result"></div>
+        <input type="file" id="files" name="files[]" multiple @change="handleFileSelect"/>
+        <output id="list"></output>
+        <p>{{fileName}}</p>
+        <p v-if="nozipfile">{{nozipfile}}</p>
     </div>
-    <script type="text/javascript" src="./script/dropzone.js"></script>
     <script type="text/javascript" src="./script/unzip.min.js"></script>
     <script type="text/javascript" src="./script/vue.js"></script>
     <script>
         new Vue({
             el: '#root',
             data: {
-                message:`Hello world!`
+                message:`Hello world!`,
+                nozipfile: ``,
+                fileName:[],
+                fileData:[]
+            },
+            methods:{
+                handleFileSelect(evt) {
+                    var files = evt.target.files; // FileList object                    
+                    
+                    // Loop through the FileList and render image files as thumbnails.
+                    this.nozipfile=""
+                    var nozip=[]
+                    for (var i = 0, f; f = files[i]; i++) {
+                        if(f.type==="application/zip"){
+                            this.fileName.push(f.name);
+                            var reader = new FileReader();
+                            // Closure to capture the file information.
+                            reader.onload = ((theFile) => {
+                            return (e) => {
+                                let b64 = e.target.result.split(',')[1]
+                                let b =  window.atob(b64);
+                                let bytes = stringToByteArray(b);
+                                let unzip = new Zlib.Unzip(bytes);
+                                console.log(unzip)
+                                let importFileList = unzip.getFilenames();
+                                this.fileData.push(importFileList)
+                                console.log(importFileList)
+                            };
+                            })(f);
+                            reader.readAsDataURL(f);
+                        }else{
+                            nozip.push(f.name)
+                            this.nozipfile = `zipファイルではありません。→ ${nozip}`;
+                        }
+
+                        function stringToByteArray(str) {
+                            var array = new (window.Uint8Array !== void 0 ? Uint8Array : Array)(str.length);
+                            var i, il;
+                            for (i = 0, il = str.length; i < il; ++i) {
+                                array[i] = str.charCodeAt(i) & 0xff;
+                            }
+                            return array;
+                        }
+                    }
+                }
             }
         })
-        var drip_file = document.getElementById('my-awesome-dropzone');
-        var result = document.getElementById('result');
-        if(window.File && window.FileReader && window.FileList && window.Blob) {
-            function loadLocalImage(file) {
-                // ファイル情報を取得
-                var fileData = file
-                console.log(fileData); // 取得した内容の確認用
         
-                // FileReaderオブジェクトを使ってファイル読み込み
-                var reader = new FileReader();
-                // ファイル読み込みに成功したときの処理
-                reader.onload = function() {
-                    // zip解凍
-                    var inputZip = reader.result;
-                    console.log(inputZip)
-                    //try {
-                        //data:application/zip;base64,
-                        var encodeString = inputZip.slice(28);
-                        console.log(encodeString)
-                        var decodeString = window.atob(encodeString);
-                        console.log(decodeString)
-                        var zipArr = new Uint8Array(decodeString);
-                        var unzip = new Zlib.Unzip(zipArr);
-                        console.log(unzip)
-                        var importFileList = unzip.getFilenames();
-                        console.log(importFileList)
-                    // } catch (e) {
-                    //     log(e.message);
-                    // }
-                    reader.readAsArrayBuffer(file);
-                }
-                // ファイル読み込みを実行
-                reader.readAsDataURL(fileData);
-            }
-            Dropzone.options.myAwesomeDropzone = {
-                init: function() {
-                    this.on("addedfile", function(file) { loadLocalImage(file) });
-                }
-            };
-        
-        } else {
-            result.innerHTML = 'File APIに対応したブラウザでご確認ください';
-        }
-    </script>
+  </script>
 </body>
 </html>
