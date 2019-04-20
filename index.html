@@ -1,84 +1,202 @@
 <!DOCTYPE html>
 <html lang="jp">
 <head>
-    <meta charset="UTF-8">
-    <title>psr Data-Listup</title>
-    <link rel="stylesheet" href="./index.css">
+  <meta charset="UTF-8">
+  <title>psr Data ListUp Viewer</title>
+  <link rel="stylesheet" href="./index.css">
 </head>
 <body>
-    <div id="root">
-        <input type="text" id="input" v-model="message">
-        <p>{{message}}</p>
-        <input type="file" id="files" name="files[]" multiple @change="handleFileSelect"/>
-        <output id="list"></output>
-        <p>{{fileName}}</p>
-        <p v-if="nozipfile">{{nozipfile}}</p>
-        <p>{{hoge}}</p>
+  <div id="root" class="container">
+    <header>
+      <h1>psr Data ListUp Viewer</h1>
+      <p>ステップ記録ツール(psr.exe)で保存したzipファイルを読み込むことで、表を生成します。</p>
+      <p><a href="https://github.com/Chige12/psr-data-listup">Github repository</a></p>
+    </header>
+
+    <input type="file" id="files" name="files[]" multiple @change="handleFileSelect"/>
+    <p v-if="nozipfile">{{nozipfile}}</p>
+
+    <div v-if="fileData.length!==0" class="table_wrapper">
+      <p class="table_title">Comparison of each file</p>
+      <table class="table">
+          <tr class="table_header">
+            <th>Number</th>
+            <th>FileName</th>
+            <th>TotalTime</th>
+            <th>AverageTime</th>
+            <th>ClickCount</th>
+          </tr>
+          <tr class="table_row" v-for="(oneFile,file_id ) in fileData" :key="`fileKey-${file_id}`">
+            <td>{{file_id+1}}</td>
+            <td>{{oneFile.name}}</td>
+            <td>{{oneFile.totalTime}}</td>
+            <td>{{oneFile.averageTime}}</td>
+            <td>{{oneFile.clickCount}}</td>
+          </tr>
+      </table>
     </div>
-    <script type="text/javascript" src="./script/unzip.min.js"></script>
-    <script type="text/javascript" src="./script/vue.js"></script>
-    <script>
-        new Vue({
-            el: '#root',
-            data: {
-                message:`Hello world!`,
-                nozipfile: ``,
-                fileName:[],
-                fileData:[],
-                hoge: ""
-            },
-            methods:{
-                handleFileSelect(evt) {
-                    var files = evt.target.files; // FileList
-                    //エラー処理用
-                    this.nozipfile=""
-                    var nozip=[]
 
-                    //FileListをループさせる
-                    for (var i = 0, f; f = files[i]; i++) {
+    <div class="table_wrapper" v-for="(oneFile,file_id ) in fileData" :key="`fileKey-${file_id}`">
+      <div class="table_info_wrapper">
+        <div class="file_number">{{file_id+1}}</div>
+        <div class="table_info">
+          <p class="file_name">{{oneFile.name}}
+          <p class="file_date">Recording Date : {{oneFile.date}}</p>
+        </div>
+      </div>
+      <div class="file_data">
+        <span>Total Time : <strong>{{oneFile.totalTime}}s</strong></span>
+        <span>Average Time : <strong>{{oneFile.averageTime}}s</strong></span>
+        <span>Click Count : <strong>{{oneFile.clickCount}}</strong></span>
+      </div>
+      <table class="table">
+          <tr class="table_header">
+            <th>Number</th>
+            <th>Time</th>
+            <th>Action</th>
+            <th>Place</th>
+            <th>Stay Time</th>
+          </tr>
+          <tr class="table_row" v-for="(oneAction,action_id) in oneFile.data" :key="`actionKey-${action_id}`">
+            <td>{{oneAction.actionNumber}}</td>
+            <td>{{oneAction.time}}</td>
+            <td>{{oneAction.action}}</td>
+            <td>{{oneAction.place}}</td>
+            <td>{{oneAction.stayTime}}</td>
+          </tr>
+      </table>
+      <div class="listbar">
+        <p class="listbar_title">Data Lists</p>
+        <div class="listbar_file" v-for="(oneFile,file_id ) in fileData" :key="`fileKey-${file_id}`">
+            {{file_id+1}}. {{oneFile.name}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="./script/unzip.min.js"></script>
+  <script type="text/javascript" src="./script/vue.js"></script>
+  <script>
+    new Vue({
+      el: '#root',
+      data: {
+        nozipfile: ``,
+        fileData:[],
+        hoge: ""
+      },
+      methods:{
+        handleFileSelect(evt) {
+        var files = evt.target.files; // FileList
+        //エラー処理用
+        this.nozipfile=""
+        var nozip=[]
 
-                        if(f.type==="application/zip"){
-                            this.fileName.push(f.name);
-                            var reader = new FileReader();
-                            //読み込み成功時
-                            reader.onload = ((theFile) => {
-                                return (e) => {
-                                    //zip解凍
-                                    let b64 = e.target.result.split(',')[1]
-                                    let b =  window.atob(b64);
-                                    let bytes = stringToByteArray(b);
-                                    let unzip = new Zlib.Unzip(bytes);
-                                    console.log(unzip)
+        //FileListをループさせる
+        for (var i = 0, f; f = files[i]; i++) {
+          if(f.type==="application/zip"){
+            var reader = new FileReader();
+            //読み込み成功時
+            reader.onload = ((theFile) => {
+              return (e) => {
+                //zip解凍
+                let b64 = e.target.result.split(',')[1]
+                let b =  window.atob(b64);
+                let bytes = stringToByteArray(b);
+                let unzip = new Zlib.Unzip(bytes);
 
-                                    //unzip.inputがmhtmlのデータっぽい。これをjsonとかに変換してjavascriptで扱いたい。
-                                    //let parser = require('mhtml-parser');
-                                    //let data = parser.parse(iconv.decode(unzip.input, "gbk"), {});
-                                    console.log(data)
-
-                                    let importFileList = unzip.getFilenames();
-                                    this.fileData.push(importFileList)
-                                    console.log(importFileList)
-                                };
-                            })(f);
-                            reader.readAsDataURL(f);
-                        }else{
-                            nozip.push(f.name)
-                            this.nozipfile = `zipファイルではありません。→ ${nozip}`;
-                        }
-
-                        function stringToByteArray(str) {
-                            var array = new (window.Uint8Array !== void 0 ? Uint8Array : Array)(str.length);
-                            var i, il;
-                            for (i = 0, il = str.length; i < il; ++i) {
-                                array[i] = str.charCodeAt(i) & 0xff;
-                            }
-                            return array;
-                        }
-                    }
+                function buffer_to_string(buf) {
+                  return String.fromCharCode.apply("", new Uint8Array(buf))
                 }
+                function large_buffer_to_string(buf) {
+                  var tmp = [];
+                  var len = 1024;
+                  for (var p = 0; p < buf.byteLength; p += len) {
+                    tmp.push(buffer_to_string(buf.slice(p, p + len)));
+                  }
+                  return tmp.join("");
+                }
+
+                let importFileList = unzip.getFilenames();
+                var buffer = unzip.decompress(importFileList[0]);
+                var ISO_8859_1 = large_buffer_to_string(buffer);
+                var mhtml = decodeURIComponent(escape(ISO_8859_1));
+                
+                var json = convert_json(mhtml)
+
+                var oneDataSet = {}
+                oneDataSet.name = theFile.name.slice(0,-4)
+                oneDataSet.date = importFileList[0].match(/\d{8}_\d{4}/)[0]
+                oneDataSet.data = json
+                oneDataSet.totalTime = timeDiff(json[0].time, json[json.length-1].time)
+                oneDataSet.averageTime = averageTime(json)
+                for (let i = 0; i < json.length-1; i++) {
+                    json[i].stayTime = timeDiff(json[i].time,json[i+1].time)
+                }
+                json[json.length-1].stayTime="null"
+                oneDataSet.clickCount = clickCount(json)
+                this.fileData.push(oneDataSet)
+                console.log(this.fileData)
+              };
+            })(f);
+            reader.readAsDataURL(f);
+          }else{
+            nozip.push(f.name)
+            this.nozipfile = `zipファイルではありません。→ ${nozip}`;
+          }
+
+          function stringToByteArray(str) {
+            var array = new (window.Uint8Array !== void 0 ? Uint8Array : Array)(str.length);
+            var i, il;
+            for (i = 0, il = str.length; i < il; ++i) {
+                array[i] = str.charCodeAt(i) & 0xff;
             }
-        })
-        
+              return array;
+            }
+          }
+          function convert_json(mhtml){
+            json_data = []
+            var mhtml_nowrap = mhtml.replace(/\r?\n/g, '');
+            var tagHtml = mhtml_nowrap.match( /<EachAction ActionNumber="\d".+?<\/EachAction>/g );
+            for (let i = 0; i < tagHtml.length; i++) {
+              var Action_object = {}
+              Action_object.actionNumber = i+1
+              Action_object.time = tagHtml[i].match( /\d{2}:\d{2}:\d{2}/g )[0];
+              var description = tagHtml[i].match(/<Description>.+?<\/Description>/)[0].slice(20,-14)
+              Action_object.action = description.match(/^.+? \("/)[0].slice(0,-3)
+              Action_object.place = description.match(/\(.+\)/)[0].slice(1,-1)
+              json_data.push(Action_object)
+            }
+            return json_data
+          }
+          function timeDiff(start,stop){
+            var startTime = start.split(':')
+            var stopTime = stop.split(':')
+            return (Number(stopTime[0]) - Number(startTime[0])) * 3600
+                  +(Number(stopTime[1]) - Number(startTime[1])) * 60
+                  +(Number(stopTime[2]) - Number(startTime[2]))
+          }
+          function averageTime(json){
+            var sumDiff=0, sumCount=0
+            var diffList=[]
+            for (let i = 0; i < json.length-1; i++) {
+              var diff = timeDiff(json[i].time,json[i+1].time)
+              sumDiff += diff
+              sumCount++
+            }
+            var averageTime = (sumDiff / sumCount)
+            return averageTime
+          }
+          function clickCount(json){
+            var clickCount = 0
+            for (let i = 0; i < json.length; i++) {
+              if(json[i].action.indexOf("左クリック")!==-1){
+                clickCount++
+              }
+            }
+            return clickCount
+          }
+        }
+      }
+    })
   </script>
 </body>
 </html>

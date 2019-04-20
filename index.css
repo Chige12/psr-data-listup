@@ -1,0 +1,109 @@
+html {
+  margin: 0;
+  padding: 0;
+  font-size: 62.5%;
+}
+body{
+  margin: 0;
+  padding: 0;
+  font-size: 1.8rem;
+  background: #e9f2f5;
+  color: #132c33;
+  position: relative;
+}
+p {
+  margin: 0;
+}
+a, a:link, a:visited {
+  text-decoration-line: underline;
+  color: #8b952d;
+}
+
+.container{
+  display: block;
+  margin: auto;
+  width: 980px;
+  padding: 10px;
+  padding-bottom: 30px;
+}
+
+header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #132c33;
+}
+
+input#files {
+  margin-top: 40px;
+  font-size: 1.6rem;
+}
+
+.table_wrapper {
+  margin-top: 50px;
+}
+.table_info_wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+.file_number {
+  font-size: 5rem;
+  min-width: 40px;
+  padding: 20px 10px;
+  text-align: center;
+}
+
+.table_title {
+  font-size: 2rem;
+}
+
+.table_info {
+  padding-left: 10px;
+}
+.file_name {
+  font-size: 3rem;
+}
+.file_date {
+  font-size: 1.7rem;
+}
+
+.file_data {
+  padding-left: 2px;
+  padding-bottom: 8px;
+}
+.file_data span {
+  display: inline-block;
+  margin-right: 18px;
+}
+
+table {
+  border-spacing: 1px;
+}
+
+table th {
+  background: #3a4e53;
+  color: #fff;
+  padding: 8px 12px;
+  font-weight: normal;
+}
+table td {
+  padding: 3px 10px;
+  border-bottom: 1px solid #fff;
+  text-align: center;
+  vertical-align: center;
+}
+
+.listbar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 200px;
+  height: 100%;
+}
+.listbar_title{
+  margin-bottom: 6px;
+}
+.listbar_file{
+  font-size: 1.5rem;
+  padding: 8px 0;
+  border-top: 1px solid #fff;
+}
