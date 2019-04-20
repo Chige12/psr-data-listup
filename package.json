@@ -4,5 +4,8 @@
   "description": "ステップ管理ツールのmhtmlファイルを表にするもの",
   "main": "index.js",
   "author": "chige12",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "mhtml-parser": "^1.0.2"
+  }
 }

@@ -13,6 +13,7 @@
         <output id="list"></output>
         <p>{{fileName}}</p>
         <p v-if="nozipfile">{{nozipfile}}</p>
+        <p>{{hoge}}</p>
     </div>
     <script type="text/javascript" src="./script/unzip.min.js"></script>
     <script type="text/javascript" src="./script/vue.js"></script>
@@ -23,31 +24,41 @@
                 message:`Hello world!`,
                 nozipfile: ``,
                 fileName:[],
-                fileData:[]
+                fileData:[],
+                hoge: ""
             },
             methods:{
                 handleFileSelect(evt) {
-                    var files = evt.target.files; // FileList object                    
-                    
-                    // Loop through the FileList and render image files as thumbnails.
+                    var files = evt.target.files; // FileList
+                    //エラー処理用
                     this.nozipfile=""
                     var nozip=[]
+
+                    //FileListをループさせる
                     for (var i = 0, f; f = files[i]; i++) {
+
                         if(f.type==="application/zip"){
                             this.fileName.push(f.name);
                             var reader = new FileReader();
-                            // Closure to capture the file information.
+                            //読み込み成功時
                             reader.onload = ((theFile) => {
-                            return (e) => {
-                                let b64 = e.target.result.split(',')[1]
-                                let b =  window.atob(b64);
-                                let bytes = stringToByteArray(b);
-                                let unzip = new Zlib.Unzip(bytes);
-                                console.log(unzip)
-                                let importFileList = unzip.getFilenames();
-                                this.fileData.push(importFileList)
-                                console.log(importFileList)
-                            };
+                                return (e) => {
+                                    //zip解凍
+                                    let b64 = e.target.result.split(',')[1]
+                                    let b =  window.atob(b64);
+                                    let bytes = stringToByteArray(b);
+                                    let unzip = new Zlib.Unzip(bytes);
+                                    console.log(unzip)
+
+                                    //unzip.inputがmhtmlのデータっぽい。これをjsonとかに変換してjavascriptで扱いたい。
+                                    //let parser = require('mhtml-parser');
+                                    //let data = parser.parse(iconv.decode(unzip.input, "gbk"), {});
+                                    console.log(data)
+
+                                    let importFileList = unzip.getFilenames();
+                                    this.fileData.push(importFileList)
+                                    console.log(importFileList)
+                                };
                             })(f);
                             reader.readAsDataURL(f);
                         }else{
