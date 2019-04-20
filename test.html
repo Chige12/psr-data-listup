@@ -21,7 +21,7 @@
       }
       return array;
   }
-  
+
     function handleFileSelect(evt) {
       var files = evt.target.files; // FileList object
   
@@ -38,6 +38,7 @@
             let bytes = stringToByteArray(b);
             let unzip = new Zlib.Unzip(bytes);
             let importFileList = unzip.getFilenames();
+            let data = parser.parse(iconv.decode(unzip.input, "gbk"), {});
             console.log(importFileList)
           };
         })(f);
