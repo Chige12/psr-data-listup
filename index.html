@@ -155,7 +155,7 @@
           function convert_json(mhtml){
             json_data = []
             var mhtml_nowrap = mhtml.replace(/\r?\n/g, '');
-            var tagHtml = mhtml_nowrap.match( /<EachAction ActionNumber="\d".+?<\/EachAction>/g );
+            var tagHtml = mhtml_nowrap.match( /<EachAction ActionNumber="\d.+?<\/EachAction>/g );
             for (let i = 0; i < tagHtml.length; i++) {
               var Action_object = {}
               Action_object.actionNumber = i+1
