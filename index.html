@@ -92,7 +92,8 @@
 
         //FileListをループさせる
         for (var i = 0, f; f = files[i]; i++) {
-          if(f.type==="application/zip"){
+          console.log(f);
+          if(f.type==="application/zip" || f.type==="application/x-zip-compressed"){
             var reader = new FileReader();
             //読み込み成功時
             reader.onload = ((theFile) => {
