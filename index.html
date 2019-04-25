@@ -177,7 +177,7 @@
           }
           function averageTime(json,totalTime){
             sumCount=clickCount(json)
-            var averageTime = (totalTime / sumCount)
+            var averageTime = orgRound((totalTime / sumCount), 10000)
             return averageTime
           }
           function clickCount(json){
@@ -188,6 +188,9 @@
               }
             }
             return clickCount
+          }
+          function orgRound(value, base) {
+            return Math.floor(value * base) / base;
           }
         }
       }
