@@ -128,7 +128,7 @@
                 oneDataSet.date = importFileList[0].match(/\d{8}_\d{4}/)[0]
                 oneDataSet.data = json
                 oneDataSet.totalTime = timeDiff(json[0].time, json[json.length-1].time)
-                oneDataSet.averageTime = averageTime(json)
+                oneDataSet.averageTime = averageTime(json,oneDataSet.totalTime)
                 for (let i = 0; i < json.length-1; i++) {
                     json[i].stayTime = timeDiff(json[i].time,json[i+1].time)
                 }
@@ -175,15 +175,9 @@
                   +(Number(stopTime[1]) - Number(startTime[1])) * 60
                   +(Number(stopTime[2]) - Number(startTime[2]))
           }
-          function averageTime(json){
-            var sumDiff=0, sumCount=0
-            var diffList=[]
-            for (let i = 0; i < json.length-1; i++) {
-              var diff = timeDiff(json[i].time,json[i+1].time)
-              sumDiff += diff
-              sumCount++
-            }
-            var averageTime = (sumDiff / sumCount)
+          function averageTime(json,totalTime){
+            sumCount=clickCount(json)
+            var averageTime = (totalTime / sumCount)
             return averageTime
           }
           function clickCount(json){
