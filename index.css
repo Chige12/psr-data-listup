@@ -91,6 +91,11 @@ table td {
   text-align: center;
   vertical-align: center;
 }
+.table_row_end td {
+  font-weight: bold;
+  border-top: 1px solid #3a4e53;
+  border-bottom: 1px solid #3a4e53;
+}
 
 .listbar {
   position: absolute;
