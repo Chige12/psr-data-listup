@@ -16,7 +16,7 @@
     <input type="file" id="files" name="files[]" multiple @change="handleFileSelect"/>
     <p v-if="nozipfile">{{nozipfile}}</p>
 
-    <div v-if="fileData.length!==0" class="table_wrapper">
+    <div v-if="sortedFileData.length!==0" class="table_wrapper">
       <p class="table_title">Comparison of each file</p>
       <table class="table">
           <tr class="table_header">
@@ -26,7 +26,7 @@
             <th>AverageTime</th>
             <th>ClickCount</th>
           </tr>
-          <tr class="table_row" v-for="(oneFile,file_id ) in fileData" :key="`fileKey-${file_id}`">
+          <tr class="table_row" v-for="(oneFile,file_id ) in sortedFileData" :key="`fileKey-${file_id}`">
             <td>{{file_id+1}}</td>
             <td>{{oneFile.name}}</td>
             <td>{{oneFile.totalTime}}</td>
@@ -36,7 +36,7 @@
       </table>
     </div>
 
-    <div class="table_wrapper" v-for="(oneFile,file_id ) in fileData" :key="`fileKey-${file_id}`">
+    <div class="table_wrapper" v-for="(oneFile,file_id ) in sortedFileData" :key="`fileKey-${file_id}`">
       <div class="table_info_wrapper">
         <div class="file_number">{{file_id+1}}</div>
         <div class="table_info">
@@ -74,7 +74,7 @@
       </table>
       <div class="listbar">
         <p class="listbar_title">Data Lists</p>
-        <div class="listbar_file" v-for="(oneFile,file_id ) in fileData" :key="`fileKey-${file_id}`">
+        <div class="listbar_file" v-for="(oneFile,file_id ) in sortedFileData" :key="`fileKey-${file_id}`">
             {{file_id+1}}. {{oneFile.name}}
         </div>
       </div>
@@ -89,6 +89,20 @@
         nozipfile: ``,
         fileData:[],
         hoge: ""
+      },
+      computed:{
+        sortedFileData(){
+          var sortedArray = this.fileData.sort(compare);
+          function compare(a, b) {
+            const A = a.startTime
+            const B = b.startTime
+            let comparison = 0;
+            if (A > B) { comparison = 1; }
+            else if ( A < B ) { comparison = -1; }
+            return comparison;
+          }
+          return sortedArray
+        }
       },
       methods:{
         handleFileSelect(evt) {
@@ -129,6 +143,7 @@
                 var mhtml = decodeURIComponent(escape(ISO_8859_1));
                 
                 var json = convert_json(mhtml)
+                console.log(json)
 
                 var oneDataSet = {}
                 oneDataSet.name = theFile.name.slice(0,-4)
@@ -141,6 +156,7 @@
                 }
                 json[json.length-1].stayTime="null"
                 oneDataSet.clickCount = clickCount(json)
+                oneDataSet.startTime = json[0].time
                 this.fileData.push(oneDataSet)
                 console.log(this.fileData)
               };
