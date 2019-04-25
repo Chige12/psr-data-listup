@@ -189,7 +189,7 @@
           function clickCount(json){
             var clickCount = 0
             for (let i = 0; i < json.length; i++) {
-              if(json[i].action.indexOf("左クリック")!==-1){
+              if(json[i].action.indexOf("左クリック" || "左ダブルクリック")!==-1){
                 clickCount++
               }
             }
